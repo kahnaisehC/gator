@@ -1,8 +1,8 @@
 -- +goose Up
 CREATE TABLE feeds(
-	name CHAR[1024],
-	url CHAR[1024] UNIQUE,
-	user_id UUID REFERENCES users ON DELETE CASCADE
+	name VARCHAR(1024) NOT NULL,
+	url VARCHAR(1024) UNIQUE NOT NULL,
+	user_id UUID REFERENCES users ON DELETE CASCADE NOT NULL
 );
 -- +goose Down
 DROP TABLE feeds;

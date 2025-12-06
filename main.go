@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kahnaisehC/blog_aggregator/internal/config"
-	"github.com/kahnaisehC/blog_aggregator/internal/database"
+	"github.com/kahnaisehc/blog_aggregator/internal/config"
+	"github.com/kahnaisehc/blog_aggregator/internal/database"
 	_ "github.com/lib/pq"
 )
 
@@ -40,25 +40,6 @@ func (cmds *commands) run(s *state, cmd command) error {
 
 func (cmds *commands) register(name string, f func(*state, command) error) {
 	cmds.cmdMap[name] = f
-}
-
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.arguments) == 0 {
-		return errors.New("the login command expects a username as an arguments")
-	}
-	username := cmd.arguments[0]
-	_, err := s.db.GetUser(context.Background(), username)
-	if err != nil {
-		return err
-	}
-
-	if err := s.cfg.SetUser(username); err != nil {
-		return err
-	}
-
-	fmt.Println("you have logged in as " + username)
-
-	return nil
 }
 
 func handlerRegister(s *state, cmd command) error {
@@ -115,35 +96,6 @@ func handlerAgg(s *state, cmd command) error {
 		return err
 	}
 	fmt.Println(feed)
-	return nil
-}
-
-func handlerAddfeed(s *state, cmd command) error {
-	if len(cmd.arguments) < 2 {
-		return errors.New("not enough arguments for add feed command. Need two: <name> <url>")
-	}
-	username := s.cfg.CurrentUserName
-	feedName := cmd.arguments[0]
-	feedUrl := cmd.arguments[1]
-
-	user, err := s.db.GetUser(context.Background(), username)
-	if err != nil {
-		return err
-	}
-
-	createFeedParams := database.CreateFeedParams{
-		Name:   feedName,
-		Url:    feedUrl,
-		UserID: user.ID,
-	}
-
-	newFeed, err := s.db.CreateFeed(context.Background(), createFeedParams)
-	if err != nil {
-		return err
-	}
-	fmt.Println("the feed is:")
-	fmt.Println(newFeed)
-
 	return nil
 }
 

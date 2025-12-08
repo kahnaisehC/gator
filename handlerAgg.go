@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,24 +33,28 @@ func scrapeFeeds(s *state) error {
 		return err
 	}
 
-	s.feeds[markedFeedRes.Url] = v
-
-	for _, f := range s.feeds {
-		if f == nil {
-			continue
-		}
-		println(f.Channel.Title)
+	fmt.Println(v.Channel.Title)
+	for _, item := range v.Channel.Item {
+		fmt.Println("- " + item.Title)
 	}
 
 	return nil
 }
 
 func handlerAgg(s *state, cmd command) error {
-	feedURL := "https://www.wagslane.dev/index.xml"
-	feed, err := fetchFeed(context.Background(), feedURL)
-	if err != nil {
-		return err
+	if len(cmd.arguments) < 1 {
+		return errors.New("not enough arguments for agg command: need a time between requests")
 	}
-	fmt.Println(feed)
+	timeString := cmd.arguments[0]
+	timeBetweenReqs, err := time.ParseDuration(timeString)
+	if err != nil {
+		fmt.Println("invalid time between requests: defaulted to 5s per request")
+		timeBetweenReqs = time.Second * 5
+	}
+	ticker := time.NewTicker(timeBetweenReqs)
+	for ; ; <-ticker.C {
+		scrapeFeeds(s)
+	}
+
 	return nil
 }

@@ -12,8 +12,9 @@ import (
 )
 
 type state struct {
-	db  *database.Queries
-	cfg *config.Config
+	feeds map[string]*RSSFeed
+	db    *database.Queries
+	cfg   *config.Config
 }
 
 type command struct {

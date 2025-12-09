@@ -10,6 +10,8 @@ import (
 	"github.com/kahnaisehC/blog_aggregator/internal/database"
 )
 
+const duplicateErrorMsg = "pq: duplicate key value violates unique constraint \"posts_url_key\""
+
 func scrapeFeeds(s *state) error {
 	nextFeed, err := s.db.GetNextFeedToFetch(context.Background())
 	if err != nil {
@@ -35,6 +37,33 @@ func scrapeFeeds(s *state) error {
 
 	fmt.Println(v.Channel.Title)
 	for _, item := range v.Channel.Item {
+		createPostParams := database.CreatePostParams{
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			Title:     item.Title,
+			Url:       item.Link,
+			FeedID:    nextFeed.FeedID,
+		}
+		if item.Description != "" {
+			createPostParams.Description = sql.NullString{
+				String: item.Description,
+				Valid:  true,
+			}
+		}
+		if timePubDate, err := time.Parse(time.DateOnly, item.PubDate); err != nil {
+			createPostParams.PublishedAt = sql.NullTime{
+				Time:  timePubDate,
+				Valid: true,
+			}
+		}
+
+		_, err := s.db.CreatePost(context.Background(), createPostParams)
+		if err != nil {
+			if err.Error() != duplicateErrorMsg {
+				fmt.Println(err.Error())
+				continue
+			}
+		}
 		fmt.Println("- " + item.Title)
 	}
 

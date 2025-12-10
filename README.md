@@ -63,6 +63,11 @@ CREATE TABLE posts (
 ```
 
 ### Installation
+If you have go installed, you can run
+```bash
+go install github.com/kahnaisehC/gator@latest
+```
+and then use the ```bash gator``` command to interact with gator!
 
 
 

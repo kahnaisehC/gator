@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kahnaisehC/blog_aggregator/internal/database"
+	"github.com/kahnaisehC/gator/internal/database"
 	_ "github.com/lib/pq"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kahnaisehC/blog_aggregator/internal/database"
+	"github.com/kahnaisehC/gator/internal/database"
 )
 
 func handlerFollowing(s *state, cmd command, user database.User) error {

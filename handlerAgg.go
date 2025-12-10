@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kahnaisehC/blog_aggregator/internal/database"
+	"github.com/kahnaisehC/gator/internal/database"
 )
 
 const duplicateErrorMsg = "pq: duplicate key value violates unique constraint \"posts_url_key\""

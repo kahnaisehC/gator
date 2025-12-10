@@ -24,13 +24,43 @@ here, db_url is the connection url for the database
 current_user_name represents the user that is currently logged in the app. Don't worry about it for now and just leave it empty
 
 ### Database
-gator needs access to a postgres database with the schema represented in the /sql/schema directory
+gator needs access to a postgres database with the following schema:
 ```sql
+CREATE TABLE users (
+	id UUID PRIMARY KEY, 
+	created_at TIMESTAMP NOT NULL, 
+	updated_at TIMESTAMP NOT NULL, 
+	name TEXT UNIQUE NOT NULL
+);
 
+CREATE TABLE feeds(
+	feed_id SERIAL PRIMARY KEY,
+	name VARCHAR(1024) NOT NULL,
+	url VARCHAR(1024) UNIQUE NOT NULL,
+	user_id UUID REFERENCES users ON DELETE CASCADE NOT NULL,
+	last_fetched_at TIMESTAMP
+);
 
+CREATE TABLE feed_follows (
+	id SERIAL PRIMARY KEY,
+	created_at TIMESTAMP NOT NULL,
+	updated_at TIMESTAMP NOT NULL,
+	user_id UUID REFERENCES users ON DELETE CASCADE NOT NULL,
+	feed_id INTEGER REFERENCES feeds ON DELETE CASCADE NOT NULL,
+	UNIQUE(user_id, feed_id)
+);
 
+CREATE TABLE posts (
+	id SERIAL PRIMARY KEY, 
+	created_at TIMESTAMP NOT NULL, 
+	updated_at TIMESTAMP NOT NULL, 
+	title VARCHAR(1024) NOT NULL,
+	url VARCHAR(1024) NOT NULL UNIQUE,
+	description TEXT,
+	published_at TIMESTAMP,
+	feed_id INTEGER REFERENCES feeds NOT NULL
+);
 ```
-
 
 ### Installation
 
